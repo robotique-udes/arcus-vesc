@@ -23,9 +23,9 @@
 bridge:
   ros__parameters:
     # topics and namespaces
-    ego_namespace: 'ego_racecar'
-    ego_scan_topic: 'scan'
-    ego_odom_topic: 'odom'
+    namespace: 'ego_racecar'
+    scan_topic: 'scan'
+    odom_topic: 'odom'
     
     # map parameters
     map_path: '/sim_ws/src/f1tenth_gym_ros/maps/levine'
@@ -42,6 +42,6 @@ bridge:
     kb_teleop: True
 
     #Use simulated localization (EKF + AMCL)
-    use_sim_localization: True
+    use_sim_localization: False
     #Run slam
     run_slam: True #Overwrites localization if true

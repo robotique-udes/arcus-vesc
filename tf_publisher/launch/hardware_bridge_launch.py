@@ -7,6 +7,8 @@ import datetime
 import glob
 
 from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions import Command
 from ament_index_python.packages import get_package_share_directory
@@ -39,13 +41,44 @@ def generate_launch_description():
         map_path = latest_map_yaml if latest_map_yaml is not None else maps_dir + ".yaml"
         print(f"[INFO] Loading map from {latest_map_yaml}")
 
+    lidar_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('urg_node2'),
+                'launch',
+                'urg_node2.launch.py'
+            )
+        )
+    )
+
+    vesc_driver_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('vesc_driver'),
+                'launch',
+                'vesc_driver_node.launch.py'
+            )
+        )
+    )
+
+    vesc_achkermann_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('vesc_ackermann'),
+                'launch',
+                'vesc_to_odom_node.launch.xml'
+            )
+        )
+    )
+
     # === Nodes ===
     bridge_node = Node(
         package='_',
-        executable='hardware_bridge',
-        name='bridge',
+        executable='tf_publisher',
+        name='tf_publisher',
         parameters=[config]
     )
+
     map_server_node = Node(
         package='nav2_map_server',
         executable='map_server',
@@ -126,18 +159,18 @@ def generate_launch_description():
         ]
     )
     # === Finalize ===
-    ld.add_action(rviz_node)
     ld.add_action(bridge_node)
     ld.add_action(nav_lifecycle_node)
     ld.add_action(map_server_node)
     ld.add_action(ego_robot_publisher)
-    ld.add_action(imu_node)
-    if has_opp:
-        ld.add_action(opp_robot_publisher)
+    ld.add_action(lidar_launch)
+    ld.add_action(vesc_driver_launch)
+    ld.add_action(vesc_achkermann_launch)
     if simulated_localization and not run_slam:
         ld.add_action(ekf_node)
         ld.add_action(amcl_node)
     elif run_slam:
+        ld.add_action(ekf_node)
         ld.add_action(slam_toolbox_node)
 
     return ld
