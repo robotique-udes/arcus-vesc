@@ -67,7 +67,8 @@ namespace vesc_driver
   {
     // get vesc serial port address
     std::string port = declare_parameter<std::string>("port", "");
-    imu_frame_ = declare_parameter<std::string>("imu_frame", "vesc");
+    imu_frame_ = declare_parameter<std::string>("imu_frame", "ego_racecar/imu");
+    imu_topic_ = declare_parameter<std::string>("imu_topic", "sensors/imu");
 
     // attempt to connect to the serial port
     try
@@ -83,8 +84,8 @@ namespace vesc_driver
 
     // create vesc state (telemetry) publisher
     state_pub_ = create_publisher<VescStateStamped>("sensors/core", rclcpp::QoS{10});
-    imu_pub_ = create_publisher<VescImuStamped>("sensors/imu", rclcpp::QoS{10});
-    imu_std_pub_ = create_publisher<Imu>("sensors/imu/raw", rclcpp::QoS{10});
+    imu_pub_ = create_publisher<VescImuStamped>(imu_topic_, rclcpp::QoS{10});
+    imu_std_pub_ = create_publisher<Imu>("imu/raw", rclcpp::QoS{10});
 
     // since vesc state does not include the servo position, publish the commanded
     // servo position as a "sensor"

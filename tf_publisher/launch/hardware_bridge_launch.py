@@ -31,11 +31,19 @@ def generate_launch_description():
     )
     
     config_dict = yaml.safe_load(open(config, 'r'))
-    simulated_localization = config_dict['bridge']['ros__parameters']['use_sim_localization']
+    localize = config_dict['bridge']['ros__parameters']['localize']
     run_slam = config_dict['bridge']['ros__parameters']['run_slam']
     map_path = config_dict['bridge']['ros__parameters']['map_path'] + '.yaml'
+    run_ekf = config_dict['bridge']['ros__parameters']['run_ekf']
+    scan_topic = config_dict['bridge']['ros__parameters']['scan_topic']
+    slam_map_topic = config_dict['bridge']['ros__parameters']['slam_map_topic']
 
-    if simulated_localization and not run_slam:
+    if run_ekf:
+        odom_topic = config_dict['bridge']['ros__parameters']['ekf_odom_topic']
+    else:
+        odom_topic = config_dict['bridge']['ros__parameters']['odom_topic']
+
+    if localize and not run_slam:
         maps_dir = config_dict['bridge']['ros__parameters']['slam_maps_dir']
         latest_map_yaml = get_latest_map_yaml(maps_dir)
         map_path = latest_map_yaml if latest_map_yaml is not None else maps_dir + ".yaml"
@@ -61,12 +69,22 @@ def generate_launch_description():
         )
     )
 
-    vesc_achkermann_launch = IncludeLaunchDescription(
+    vesc_odom_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('vesc_ackermann'),
                 'launch',
                 'vesc_to_odom_node.launch.xml'
+            )
+        )
+    )
+
+    ackermann_vesc_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('vesc_ackermann'),
+                'launch',
+                'ackermann_to_vesc_node.launch.xml'
             )
         )
     )
@@ -88,7 +106,7 @@ def generate_launch_description():
                     {'output': 'screen'},
                     {'use_sim_time': True}]
     )
-    if simulated_localization and not run_slam:
+    if localize and not run_slam:
         nav_lifecycle_node = Node(
             package='nav2_lifecycle_manager',
             executable='lifecycle_manager',
@@ -137,7 +155,7 @@ def generate_launch_description():
             'amcl.yaml'
         )],
         remappings=[
-            ("/odom", "/odometry/filtered")
+            ("/odom", odom_topic)
         ]
     )
 
@@ -152,10 +170,8 @@ def generate_launch_description():
             'mapper_params_online_async.yaml')
         ],
         remappings=[
-            ('/map', '/slam_map'),
-            ('/scan', '/scan'),
-            ('/tf', '/tf'),
-            ('/tf_static', '/tf_static'),
+            ('/map', slam_map_topic),
+            ('/scan', scan_topic),
         ]
     )
     # === Finalize ===
@@ -165,13 +181,16 @@ def generate_launch_description():
     ld.add_action(ego_robot_publisher)
     ld.add_action(lidar_launch)
     ld.add_action(vesc_driver_launch)
-    ld.add_action(vesc_achkermann_launch)
-    if simulated_localization and not run_slam:
+    ld.add_action(vesc_odom_launch)
+    ld.add_action(ackermann_vesc_launch)
+    if localize and not run_slam:
         ld.add_action(ekf_node)
         ld.add_action(amcl_node)
     elif run_slam:
         ld.add_action(ekf_node)
         ld.add_action(slam_toolbox_node)
+    elif run_ekf and not run_slam and not localize:
+        ld.add_action(ekf_node)
 
     return ld
 # Note: If both simulated_localization and run_slam are true, only SLAM will run.
