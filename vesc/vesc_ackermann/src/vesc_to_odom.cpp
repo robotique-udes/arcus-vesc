@@ -49,7 +49,7 @@ namespace vesc_ackermann
       : Node("vesc_to_odom_node", options),
         odom_frame_("odom"),
         base_frame_("base_link"),
-        odom_topic_("odom_topic"),
+        odom_topic_("odom"),
         use_servo_cmd_(true),
         publish_tf_(true),
         x_(0.0),

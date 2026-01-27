@@ -9,6 +9,7 @@ import glob
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.launch_description_sources import FrontendLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions import Command
 from ament_index_python.packages import get_package_share_directory
@@ -70,7 +71,7 @@ def generate_launch_description():
     )
 
     vesc_odom_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
+        FrontendLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('vesc_ackermann'),
                 'launch',
@@ -80,7 +81,7 @@ def generate_launch_description():
     )
 
     ackermann_vesc_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
+        FrontendLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('vesc_ackermann'),
                 'launch',
@@ -91,7 +92,7 @@ def generate_launch_description():
 
     # === Nodes ===
     bridge_node = Node(
-        package='_',
+        package='tf_publisher',
         executable='tf_publisher',
         name='tf_publisher',
         parameters=[config]
@@ -130,7 +131,7 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='ego_robot_state_publisher',
-        parameters=[{'robot_description': Command(['xacro ', os.path.join(get_package_share_directory('_'), 'launch', 'ego_racecar.xacro')])}],
+        parameters=[{'robot_description': Command(['xacro ', os.path.join(get_package_share_directory('tf_publisher'), 'launch', 'ego_racecar.xacro')])}],
         remappings=[('/robot_description', 'ego_robot_description')]
     )
     ekf_node = Node(
@@ -139,7 +140,7 @@ def generate_launch_description():
         name='ekf_filter_node',
         output='screen',
         parameters=[os.path.join(
-            get_package_share_directory('_'),
+            get_package_share_directory('tf_publisher'),
             'config',
             'ekf.yaml'
         )]
@@ -150,7 +151,7 @@ def generate_launch_description():
         name="amcl",
         output="screen",
         parameters=[os.path.join(
-            get_package_share_directory('_'),
+            get_package_share_directory('tf_publisher'),
             'config',
             'amcl.yaml'
         )],
@@ -165,7 +166,7 @@ def generate_launch_description():
         name='slam_toolbox',
         output='screen',
         parameters=[os.path.join(
-            get_package_share_directory('_'),
+            get_package_share_directory('tf_publisher'),
             'config',
             'mapper_params_online_async.yaml')
         ],

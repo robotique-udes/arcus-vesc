@@ -40,7 +40,7 @@ import os
 
 class tf_publisher(Node):
     def __init__(self):
-        
+        Node.__init__(self, 'tf_publisher')
         #Added default values for parameters to avoid warnings
         self.declare_parameter('namespace', '')
         self.declare_parameter('odom_topic', '')
@@ -106,8 +106,8 @@ class tf_publisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    hardware_bridge = tf_publisher()
-    rclpy.spin(hardware_bridge)
+    tf_publisher = tf_publisher()
+    rclpy.spin(tf_publisher)
 
 if __name__ == '__main__':
     main()
