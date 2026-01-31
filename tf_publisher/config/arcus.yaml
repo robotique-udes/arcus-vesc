@@ -20,20 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-bridge:
+tf_publisher:
   ros__parameters:
     # topics and namespaces
     namespace: 'ego_racecar'
     scan_topic: '/scan'
     odom_topic: '/odom'
+    drive_topic: '/drive'
     ekf_odom_topic: '/odom/filtered'
     slam_map_topic: '/slam_map'
     
     # map parameters
     map_path: '/sim_ws/src/f1tenth_gym_ros/maps/levine'
-    slam_maps_dir: '~/arcus/slam_map_saver/slam_maps'
+    slam_maps_dir: '/home/arcus/arcus/slam_map_saver/slam_maps'
     map_img_ext: '.pgm'
-
 
     # ego starting pose on map
     sx: 0.0
@@ -44,8 +44,9 @@ bridge:
     kb_teleop: True
 
     #Use localization (EKF + AMCL)
-    localize: False
+    localize: True
     #Run slam + EKF
     run_slam: False #Overwrites localization if true
 
     run_ekf: True
+

@@ -18,6 +18,7 @@ from ament_index_python.packages import get_package_share_directory
 def get_latest_map_yaml(map_dir: str):
     """Return the path to the most recently modified .yaml file in map_dir, or None if none exist."""
     yaml_files = glob.glob(os.path.join(map_dir, "*.yaml"))
+    print(f"Found {len(yaml_files)} map")
     if not yaml_files:
         return None
     latest = max(yaml_files, key=os.path.getmtime)
@@ -32,20 +33,20 @@ def generate_launch_description():
     )
     
     config_dict = yaml.safe_load(open(config, 'r'))
-    localize = config_dict['bridge']['ros__parameters']['localize']
-    run_slam = config_dict['bridge']['ros__parameters']['run_slam']
-    map_path = config_dict['bridge']['ros__parameters']['map_path'] + '.yaml'
-    run_ekf = config_dict['bridge']['ros__parameters']['run_ekf']
-    scan_topic = config_dict['bridge']['ros__parameters']['scan_topic']
-    slam_map_topic = config_dict['bridge']['ros__parameters']['slam_map_topic']
+    localize = config_dict['tf_publisher']['ros__parameters']['localize']
+    run_slam = config_dict['tf_publisher']['ros__parameters']['run_slam']
+    map_path = config_dict['tf_publisher']['ros__parameters']['map_path'] + '.yaml'
+    run_ekf = config_dict['tf_publisher']['ros__parameters']['run_ekf']
+    scan_topic = config_dict['tf_publisher']['ros__parameters']['scan_topic']
+    slam_map_topic = config_dict['tf_publisher']['ros__parameters']['slam_map_topic']
 
     if run_ekf:
-        odom_topic = config_dict['bridge']['ros__parameters']['ekf_odom_topic']
+        odom_topic = config_dict['tf_publisher']['ros__parameters']['ekf_odom_topic']
     else:
-        odom_topic = config_dict['bridge']['ros__parameters']['odom_topic']
+        odom_topic = config_dict['tf_publisher']['ros__parameters']['odom_topic']
 
     if localize and not run_slam:
-        maps_dir = config_dict['bridge']['ros__parameters']['slam_maps_dir']
+        maps_dir = config_dict['tf_publisher']['ros__parameters']['slam_maps_dir']
         latest_map_yaml = get_latest_map_yaml(maps_dir)
         map_path = latest_map_yaml if latest_map_yaml is not None else maps_dir + ".yaml"
         print(f"[INFO] Loading map from {latest_map_yaml}")
@@ -173,6 +174,7 @@ def generate_launch_description():
         remappings=[
             ('/map', slam_map_topic),
             ('/scan', scan_topic),
+            ('/odom', odom_topic)
         ]
     )
     # === Finalize ===
