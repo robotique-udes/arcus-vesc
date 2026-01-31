@@ -45,7 +45,6 @@ def generate_launch_description():
         package='urg_node2',
         executable='urg_node2_node',
         name=LaunchConfiguration('node_name'),
-        remappings=[('scan', LaunchConfiguration('scan_topic_name'))],
         parameters=[config_params],
         namespace='',
         output='screen',
@@ -92,7 +91,6 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('auto_start', default_value='true'),
         DeclareLaunchArgument('node_name', default_value='urg_node2'),
-        DeclareLaunchArgument('scan_topic_name', default_value='scan'),
         lifecycle_node,
         urg_node2_node_configure_event_handler,
         urg_node2_node_activate_event_handler,

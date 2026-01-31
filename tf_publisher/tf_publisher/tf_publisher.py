@@ -40,47 +40,24 @@ import os
 
 class tf_publisher(Node):
     def __init__(self):
-        
+        Node.__init__(self, 'tf_publisher')
         #Added default values for parameters to avoid warnings
-        self.declare_parameter('ego_namespace', '')
-        self.declare_parameter('ego_odom_topic', '')
-        self.declare_parameter('ego_opp_odom_topic', '')
-        self.declare_parameter('ego_scan_topic','')
-        self.declare_parameter('ego_drive_topic','')
-        self.declare_parameter('scan_distance_to_base_link', 0.0)
-        self.declare_parameter('scan_fov', 0.0)
-        self.declare_parameter('scan_beams', 0)
+        self.declare_parameter('namespace', '')
+        self.declare_parameter('odom_topic', '')
+        self.declare_parameter('scan_topic','')
+        self.declare_parameter('drive_topic','')
         self.declare_parameter('map_path', '')
         self.declare_parameter('map_img_ext', '')
-        self.declare_parameter('sx', 0.0)
-        self.declare_parameter('sy', 0.0)
-        self.declare_parameter('stheta', 0.0)
-        self.declare_parameter('sx1',0.0)
-        self.declare_parameter('sy1',0.0)
-        self.declare_parameter('stheta1',0.0)
         self.declare_parameter('kb_teleop', True)
-        self.declare_parameter('use_sim_localization', False)
+        self.declare_parameter('localize', False)
         self.declare_parameter('run_slam', False)
         self.declare_parameter('slam_maps_dir', '')
+        self.declare_parameter('run_ekf', False)
 
 
-        sx = self.get_parameter('sx').value
-        sy = self.get_parameter('sy').value
-        stheta = self.get_parameter('stheta').value
-        self.ego_pose = [sx, sy, stheta]
-        self.ego_speed = [0.0, 0.0, 0.0]
-        self.ego_requested_speed = 0.0
-        self.ego_steer = 0.0
-        self.ego_collision = False
-        ego_scan_topic = self.get_parameter('ego_scan_topic').value
-        ego_drive_topic = self.get_parameter('ego_drive_topic').value
-        scan_fov = self.get_parameter('scan_fov').value
-        scan_beams = self.get_parameter('scan_beams').value
-        self.angle_min = -scan_fov / 2.
-        self.angle_max = scan_fov / 2.
-        self.angle_inc = scan_fov / scan_beams
-        self.ego_namespace = self.get_parameter('ego_namespace').value
-        ego_odom_topic = self.ego_namespace + '/' + self.get_parameter('ego_odom_topic').value
+        ego_drive_topic = self.get_parameter('drive_topic')
+        self.namespace = self.get_parameter('namespace').value
+        ego_odom_topic = self.get_parameter('odom_topic').value
         self.scan_distance_to_base_link = self.get_parameter('scan_distance_to_base_link').value
 
         # transform broadcaster
@@ -111,23 +88,6 @@ class tf_publisher(Node):
 
 
     def _publish_transforms(self, odom_msg):
-        ts = odom_msg.header.stamp
-        ego_t = Transform()
-        ego_t.translation.x = odom_msg.pose.pose.position.x
-        ego_t.translation.y = odom_msg.pose.pose.position.y
-        ego_t.translation.z = 0.0
-        ego_quat = euler.euler2quat(0.0, 0.0, odom_msg.pose.pose.orientation.w, axes='sxyz')
-        ego_t.rotation.x = ego_quat[1]
-        ego_t.rotation.y = ego_quat[2]
-        ego_t.rotation.z = ego_quat[3]
-        ego_t.rotation.w = ego_quat[0]
-
-        ego_ts = TransformStamped()
-        ego_ts.transform = ego_t
-        ego_ts.header.stamp = ts
-        ego_ts.header.frame_id = 'odom'
-        ego_ts.child_frame_id = self.ego_namespace + '/base_link'
-        self.br.sendTransform(ego_ts)
 
         ego_wheel_ts = TransformStamped()
         ego_wheel_quat = euler.euler2quat(0., 0., self.ego_steer, axes='sxyz')
@@ -146,8 +106,8 @@ class tf_publisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    hardware_bridge = tf_publisher()
-    rclpy.spin(hardware_bridge)
+    tf_publisher = tf_publisher()
+    rclpy.spin(tf_publisher)
 
 if __name__ == '__main__':
     main()

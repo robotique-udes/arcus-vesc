@@ -26,7 +26,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'hardware_bridge = arcus_hardware_bridge.hardware_bridge:main'
+            'tf_publisher = tf_publisher.tf_publisher:main'
         ],
     },
 )

@@ -53,6 +53,7 @@ namespace urg_node2
     angle_max_ = declare_parameter<double>("angle_max", M_PI);
     skip_ = declare_parameter<int>("skip", 0);
     cluster_ = declare_parameter<int>("cluster", 1);
+    scan_topic_ = declare_parameter<std::string>("scan_topic", "/scan");
   }
 
   // デストラクタ
@@ -81,7 +82,7 @@ namespace urg_node2
     }
     else
     {
-      scan_pub_ = create_publisher<sensor_msgs::msg::LaserScan>("scan_raw", rclcpp::QoS(20));
+      scan_pub_ = create_publisher<sensor_msgs::msg::LaserScan>(scan_topic_, rclcpp::QoS(20));
     }
 
     // スレッド起動
