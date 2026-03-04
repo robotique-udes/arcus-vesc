@@ -7,13 +7,13 @@
   <!-- VESC to Odom node -->
   <node pkg="vesc_ackermann" exec="vesc_to_odom_node" name="vesc_to_odom_node" output="screen">
     <param name="odom_frame" value="odom" />
-    <param name="base_frame" value="base_link" />
-    <param name="speed_to_erpm_gain" value="1.0" />
+    <param name="base_frame" value="ego_racecar/base_link" />
+    <param name="speed_to_erpm_gain" value="-4614.0" />
     <param name="speed_to_erpm_offset" value="0.0" />
     <param name="use_servo_cmd_to_calc_angular_velocity" value="true" />
-    <param name="steering_angle_to_servo_gain" value="1.0" />
-    <param name="steering_angle_to_servo_offset" value="0.0" />
-    <param name="wheelbase" value="0.2" />
-    <param name="publish_tf" value="false" />
+    <param name="steering_angle_to_servo_gain" value="-1.2135" />
+    <param name="steering_angle_to_servo_offset" value="0.53" />
+    <param name="wheelbase" value="0.33" />
+    <param name="publish_tf" value="true" />
   </node>
 </launch>

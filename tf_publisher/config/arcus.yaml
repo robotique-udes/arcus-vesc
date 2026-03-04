@@ -1,0 +1,52 @@
+# MIT License
+
+# Copyright (c) 2020 Hongrui Zheng
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+tf_publisher:
+  ros__parameters:
+    # topics and namespaces
+    namespace: 'ego_racecar'
+    scan_topic: '/scan'
+    odom_topic: '/odom'
+    drive_topic: '/drive'
+    ekf_odom_topic: '/odom/filtered'
+    slam_map_topic: '/slam_map'
+    
+    # map parameters
+    map_path: '/sim_ws/src/f1tenth_gym_ros/maps/levine'
+    slam_maps_dir: '/home/arcus/arcus/slam_map_saver/slam_maps'
+    map_img_ext: '.pgm'
+
+    # ego starting pose on map
+    sx: 0.0
+    sy: 0.0
+    stheta: 0.0
+
+    # teleop
+    kb_teleop: True
+
+    #Use localization (EKF + AMCL)
+    localize: False
+    #Run slam + EKF
+    run_slam: False #Overwrites localization if true
+
+    run_ekf: True
+
