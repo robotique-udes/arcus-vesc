@@ -44,7 +44,7 @@ tf_publisher:
     kb_teleop: True
 
     #Use localization (EKF + AMCL)
-    localize: True
+    localize: False
     #Run slam + EKF
     run_slam: False #Overwrites localization if true
 

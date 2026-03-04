@@ -2,7 +2,7 @@
 #Most of these parameters will need to be adjusted for real car implementation
 amcl:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
 
     # Frames
     base_frame_id: "ego_racecar/base_link"
