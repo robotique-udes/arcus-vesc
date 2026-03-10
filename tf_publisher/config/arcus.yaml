@@ -48,5 +48,5 @@ tf_publisher:
     #Run slam + EKF
     run_slam: False #Overwrites localization if true
 
-    run_ekf: True
+    run_ekf: False
 

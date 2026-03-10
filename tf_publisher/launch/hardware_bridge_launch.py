@@ -99,6 +99,7 @@ def generate_launch_description():
         parameters=[config]
     )
 
+
     map_server_node = Node(
         package='nav2_map_server',
         executable='map_server',
@@ -146,19 +147,11 @@ def generate_launch_description():
             'ekf.yaml'
         )]
     )
-    amcl_node = Node(
-        package="nav2_amcl",
-        executable="amcl",
-        name="amcl",
-        output="screen",
-        parameters=[os.path.join(
-            get_package_share_directory('tf_publisher'),
-            'config',
-            'amcl.yaml'
-        )],
-        remappings=[
-            ("/odom", odom_topic)
-        ]
+    pf_node = Node(
+        package='particle_filter',
+        executable='particle_filter',
+        name='particle_filter',
+        parameters=['/home/nvidia/particle_filter/config/localize.yaml']
     )
 
     slam_toolbox_node = Node(
@@ -188,7 +181,7 @@ def generate_launch_description():
     ld.add_action(ackermann_vesc_launch)
     if localize and not run_slam:
         ld.add_action(ekf_node)
-        ld.add_action(amcl_node)
+        ld.add_action(pf_node)
     elif run_slam:
         ld.add_action(ekf_node)
         ld.add_action(slam_toolbox_node)
