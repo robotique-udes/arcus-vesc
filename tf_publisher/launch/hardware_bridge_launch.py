@@ -39,6 +39,8 @@ def generate_launch_description():
     run_ekf = config_dict['tf_publisher']['ros__parameters']['run_ekf']
     scan_topic = config_dict['tf_publisher']['ros__parameters']['scan_topic']
     slam_map_topic = config_dict['tf_publisher']['ros__parameters']['slam_map_topic']
+    pure_pursuit = config_dict['tf_publisher']['ros__parameters']['pure_pursuit']
+    disparity = config_dict['tf_publisher']['ros__parameters']['disparity']
 
     if run_ekf:
         odom_topic = config_dict['tf_publisher']['ros__parameters']['ekf_odom_topic']
@@ -49,6 +51,8 @@ def generate_launch_description():
         maps_dir = config_dict['tf_publisher']['ros__parameters']['slam_maps_dir']
         latest_map_yaml = get_latest_map_yaml(maps_dir)
         map_path = latest_map_yaml if latest_map_yaml is not None else maps_dir + ".yaml"
+        if latest_map_yaml is None:
+            print("Didn't find map")
         print(f"[INFO] Loading map from {latest_map_yaml}")
 
     lidar_launch = IncludeLaunchDescription(
@@ -91,6 +95,7 @@ def generate_launch_description():
         )
     )
 
+
     # === Nodes ===
     bridge_node = Node(
         package='tf_publisher',
@@ -106,8 +111,7 @@ def generate_launch_description():
         parameters=[{'yaml_filename': map_path},
                     {'topic': 'map'},
                     {'frame_id': 'map'},
-                    {'output': 'screen'},
-                    {'use_sim_time': True}]
+                    {'output': 'screen'},]
     )
     if localize and not run_slam:
         nav_lifecycle_node = Node(
@@ -117,7 +121,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': True},
                         {'autostart': True},
-                        {'node_names': ['map_server', 'amcl']}]
+                        {'node_names': ['map_server']}]
         )
     else:
         nav_lifecycle_node = Node(
@@ -149,10 +153,35 @@ def generate_launch_description():
     )
     pf_node = Node(
         package='particle_filter',
-        executable='particle_filter',
+        executable='particle_filter_node',
         name='particle_filter',
-        parameters=['/home/nvidia/particle_filter/config/localize.yaml']
+        parameters=['/home/arcus/particle_filter/config/localize.yaml'],
+        remappings=[
+            ('/odom', odom_topic)
+        ]
     )
+
+    master_node = Node(
+        package='arcus_master',
+        executable='master_node',
+        name='arcus_master'
+    )
+
+    safety_node = Node(
+        package="safety_node",
+        namespace="arcus",
+        executable="safety_node",
+        name="safety_node")
+
+    pure_pursuit_node = Node(package="pure_pursuit",
+                    namespace="arcus",
+                    executable="pure_pursuit",
+                    name="pure_pursuit")
+
+    gap_follow_node = Node(package="gap_follow",
+                    namespace="arcus",
+                    executable="gap_follow",
+                    name="gap_follow")
 
     slam_toolbox_node = Node(
         package='slam_toolbox',
@@ -179,6 +208,12 @@ def generate_launch_description():
     ld.add_action(vesc_driver_launch)
     ld.add_action(vesc_odom_launch)
     ld.add_action(ackermann_vesc_launch)
+    ld.add_action(master_node)
+    ld.add_action(safety_node)
+    if pure_pursuit:
+        ld.add_action(pure_pursuit_node)
+    if disparity:
+        ld.add_action(gap_follow_node)
     if localize and not run_slam:
         ld.add_action(ekf_node)
         ld.add_action(pf_node)

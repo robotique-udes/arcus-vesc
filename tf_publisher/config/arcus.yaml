@@ -27,11 +27,11 @@ tf_publisher:
     scan_topic: '/scan'
     odom_topic: '/odom'
     drive_topic: '/drive'
-    ekf_odom_topic: '/odom/filtered'
+    ekf_odom_topic: '/odometry/filtered'
     slam_map_topic: '/slam_map'
     
     # map parameters
-    map_path: '/sim_ws/src/f1tenth_gym_ros/maps/levine'
+    map_path: '/home/arcus/arcus/slam_map_saver/slam_maps/slam_map_20260314_130422.yaml'
     slam_maps_dir: '/home/arcus/arcus/slam_map_saver/slam_maps'
     map_img_ext: '.pgm'
 
@@ -44,9 +44,13 @@ tf_publisher:
     kb_teleop: True
 
     #Use localization (EKF + AMCL)
-    localize: False
+    localize: True
     #Run slam + EKF
     run_slam: False #Overwrites localization if true
 
-    run_ekf: False
+    run_ekf: True
+
+    pure_pursuit: False
+
+    disparity: False
 

@@ -22,6 +22,11 @@ class TfPublisher(Node):
         self.declare_parameter('drive_topic', '')
         self.declare_parameter('vesc_imu_topic', '/sensors/imu')
         self.declare_parameter('imu_topic', '/imu')
+        self.declare_parameter('map_path', '')
+        self.declare_parameter('slam_maps_dir', '')
+        self.declare_parameter('map_img_ext', '')
+        
+
 
         self.namespace = self.get_parameter('namespace').value
         odom_topic = self.get_parameter('odom_topic').value
