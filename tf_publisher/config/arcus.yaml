@@ -31,7 +31,7 @@ tf_publisher:
     slam_map_topic: '/slam_map'
     
     # map parameters
-    map_path: '/home/arcus/arcus/slam_map_saver/slam_maps/slam_map_20260314_130422.yaml'
+    map_path: '/home/arcus/arcus/slam_map_saver/slam_maps/slam_map_20260325_015852'
     slam_maps_dir: '/home/arcus/arcus/slam_map_saver/slam_maps'
     map_img_ext: '.pgm'
 
@@ -46,7 +46,7 @@ tf_publisher:
     #Use localization (EKF + AMCL)
     localize: True
     #Run slam + EKF
-    run_slam: False #Overwrites localization if true
+    run_slam: False  #Overwrites localization if true
 
     run_ekf: True
 
