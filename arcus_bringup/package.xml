@@ -2,9 +2,9 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd"
             schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>tf_publisher</name>
+  <name>arcus_bringup</name>
   <version>0.1.0</version>
-  <description>tf_publisher</description>
+  <description>arcus_bringup</description>
 
   <maintainer email="you@email.com">Your Name</maintainer>
   <license>MIT</license>

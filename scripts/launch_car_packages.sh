@@ -4,4 +4,4 @@ sudo chmod 777 /dev/ttyACM0
 
 
 echo "Launching packages..."
-ros2 launch tf_publisher hardware_bridge_launch.py
+ros2 launch arcus_bringup arcus_bringup.launch.py

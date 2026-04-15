@@ -20,8 +20,6 @@ class TfPublisher(Node):
         self.declare_parameter('namespace', '')
         self.declare_parameter('odom_topic', '')
         self.declare_parameter('drive_topic', '')
-        self.declare_parameter('vesc_imu_topic', '/sensors/imu')
-        self.declare_parameter('imu_topic', '/imu')
         self.declare_parameter('map_path', '')
         self.declare_parameter('slam_maps_dir', '')
         self.declare_parameter('map_img_ext', '')
@@ -31,17 +29,11 @@ class TfPublisher(Node):
         self.namespace = self.get_parameter('namespace').value
         odom_topic = self.get_parameter('odom_topic').value
         drive_topic = self.get_parameter('drive_topic').value
-        vesc_imu_topic = self.get_parameter('vesc_imu_topic').value
-        imu_topic = self.get_parameter('imu_topic').value
-
         # State
         self.ego_steer = 0.0
 
         # TF broadcaster
         self.br = TransformBroadcaster(self)
-
-        # Publishers
-        self.imu_pub = self.create_publisher(Imu, imu_topic, 10)
 
         # Subscribers
         self.create_subscription(
@@ -58,38 +50,11 @@ class TfPublisher(Node):
             10
         )
 
-        self.create_subscription(
-            VescImuStamped,
-            vesc_imu_topic,
-            self.vesc_imu_callback,
-            10
-        )
-
-        self.get_logger().info(
-            f"Bridging VESC IMU '{vesc_imu_topic}' → '{imu_topic}'"
-        )
-
     def drive_callback(self, msg):
         self.ego_steer = msg.drive.steering_angle
 
     def odom_callback(self, msg):
         self.publish_wheel_tf(msg.header.stamp)
-
-    def vesc_imu_callback(self, msg: VescImuStamped):
-        imu = Imu()
-
-        imu.header = msg.header
-
-        # Angular velocity
-        imu.angular_velocity = msg.imu.angular_velocity
-
-        # Linear acceleration
-        imu.linear_acceleration = msg.imu.linear_acceleration
-
-        # Do NOT provide orientation (tell EKF explicitly)
-        imu.orientation_covariance[0] = -1.0
-
-        self.imu_pub.publish(imu)
 
     def publish_wheel_tf(self, stamp):
         ts = TransformStamped()

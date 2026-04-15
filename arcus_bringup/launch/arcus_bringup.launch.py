@@ -27,7 +27,7 @@ def get_latest_map_yaml(map_dir: str):
 def generate_launch_description():
     ld = LaunchDescription()
     config = os.path.join(
-        get_package_share_directory('tf_publisher'),
+        get_package_share_directory('arcus_bringup'),
         'config',
         'arcus.yaml'
     )
@@ -95,11 +95,32 @@ def generate_launch_description():
         )
     )
 
+    master_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/arcus_master/launch/master_node.launch.py')
+    )
+
+    disparity_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/gap_follow/launch/gap_follow.launch.py')
+    )
+
+    pure_pursuit_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/pure_pursuit/launch/pure_pursuit.launch.py')
+    )
+
+    safety_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/safety_node/launch/safety_node.launch.py')
+    )
+
+    track_zone_manager_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/track_zone_manager/launch/track_zone_manager.launch.py')
+    )
+
+
 
     # === Nodes ===
     bridge_node = Node(
-        package='tf_publisher',
-        executable='tf_publisher',
+        package='arcus_bringup',
+        executable='arcus_bringup',
         name='tf_publisher',
         parameters=[config]
     )
@@ -137,7 +158,7 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='ego_robot_state_publisher',
-        parameters=[{'robot_description': Command(['xacro ', os.path.join(get_package_share_directory('tf_publisher'), 'launch', 'ego_racecar.xacro')])}],
+        parameters=[{'robot_description': Command(['xacro ', os.path.join(get_package_share_directory('arcus_bringup'), 'launch', 'ego_racecar.xacro')])}],
         remappings=[('/robot_description', 'ego_robot_description')]
     )
     ekf_node = Node(
@@ -146,7 +167,7 @@ def generate_launch_description():
         name='ekf_filter_node',
         output='screen',
         parameters=[os.path.join(
-            get_package_share_directory('tf_publisher'),
+            get_package_share_directory('arcus_bringup'),
             'config',
             'ekf.yaml'
         )]
@@ -161,35 +182,13 @@ def generate_launch_description():
         ]
     )
 
-    master_node = Node(
-        package='arcus_master',
-        executable='master_node',
-        name='arcus_master'
-    )
-
-    safety_node = Node(
-        package="safety_node",
-        namespace="arcus",
-        executable="safety_node",
-        name="safety_node")
-
-    pure_pursuit_node = Node(package="pure_pursuit",
-                    namespace="arcus",
-                    executable="pure_pursuit",
-                    name="pure_pursuit")
-
-    gap_follow_node = Node(package="gap_follow",
-                    namespace="arcus",
-                    executable="gap_follow",
-                    name="gap_follow")
-
     slam_toolbox_node = Node(
         package='slam_toolbox',
         executable='async_slam_toolbox_node',
         name='slam_toolbox',
         output='screen',
         parameters=[os.path.join(
-            get_package_share_directory('tf_publisher'),
+            get_package_share_directory('arcus_bringup'),
             'config',
             'mapper_params_online_async.yaml')
         ],
@@ -208,12 +207,13 @@ def generate_launch_description():
     ld.add_action(vesc_driver_launch)
     ld.add_action(vesc_odom_launch)
     ld.add_action(ackermann_vesc_launch)
-    ld.add_action(master_node)
-    ld.add_action(safety_node)
+    ld.add_action(master_node_launch)
+    ld.add_action(safety_node_launch)
+    ld.add_action(track_zone_manager_launch)
     if pure_pursuit:
-        ld.add_action(pure_pursuit_node)
+        ld.add_action(pure_pursuit_node_launch)
     if disparity:
-        ld.add_action(gap_follow_node)
+        ld.add_action(disparity_node_launch)
     if localize and not run_slam:
         ld.add_action(ekf_node)
         ld.add_action(pf_node)
