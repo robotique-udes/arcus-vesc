@@ -43,14 +43,14 @@ tf_publisher:
     # teleop
     kb_teleop: True
 
-    #Use localization (EKF + AMCL)
+    #Use particle filter
     localize: True
     #Run slam + EKF
-    run_slam: False  #Overwrites localization if true
+    run_slam: False #Overwrites localization if true
 
     run_ekf: True
 
     pure_pursuit: False
 
-    disparity: False
+    disparity: True
 

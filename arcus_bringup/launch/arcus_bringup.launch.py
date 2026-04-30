@@ -115,6 +115,10 @@ def generate_launch_description():
         PythonLaunchDescriptionSource('/home/arcus/arcus/track_zone_manager/launch/track_zone_manager.launch.py')
     )
 
+    costmap_maker_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/costmap_maker/launch/costmap_maker.launch.py')
+    )
+
 
 
     # === Nodes ===
@@ -210,6 +214,7 @@ def generate_launch_description():
     ld.add_action(master_node_launch)
     ld.add_action(safety_node_launch)
     ld.add_action(track_zone_manager_launch)
+    ld.add_action(costmap_maker_launch)
     if pure_pursuit:
         ld.add_action(pure_pursuit_node_launch)
     if disparity:
