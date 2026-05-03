@@ -17,12 +17,30 @@ class TfPublisher(Node):
         super().__init__('tf_publisher')
 
         # Parameters
-        self.declare_parameter('namespace', '')
-        self.declare_parameter('odom_topic', '')
-        self.declare_parameter('drive_topic', '')
-        self.declare_parameter('map_path', '')
-        self.declare_parameter('slam_maps_dir', '')
-        self.declare_parameter('map_img_ext', '')
+        self.declare_parameter('namespace', 'ego_racecar')
+        self.declare_parameter('scan_topic', '/scan')
+        self.declare_parameter('odom_topic', '/odom')
+        self.declare_parameter('drive_topic', '/drive')
+        self.declare_parameter('ekf_odom_topic', '/odometry/filtered')
+        self.declare_parameter('slam_map_topic', '/slam_map')
+        self.declare_parameter(
+            'map_path',
+            '/home/arcus/arcus/slam_map_saver/slam_maps/slam_map_20260325_015852'
+        )
+        self.declare_parameter(
+            'slam_maps_dir',
+            '/home/arcus/arcus/slam_map_saver/slam_maps'
+        )
+        self.declare_parameter('map_img_ext', '.pgm')
+        self.declare_parameter('sx', 0.0)
+        self.declare_parameter('sy', 0.0)
+        self.declare_parameter('stheta', 0.0)
+        self.declare_parameter('kb_teleop', True)
+        self.declare_parameter('localize', False)
+        self.declare_parameter('run_slam', True)
+        self.declare_parameter('run_ekf', True)
+        self.declare_parameter('pure_pursuit', False)
+        self.declare_parameter('disparity', True)
         
 
 

@@ -52,5 +52,5 @@ tf_publisher:
 
     pure_pursuit: False
 
-    disparity: True
+    disparity: False
 
