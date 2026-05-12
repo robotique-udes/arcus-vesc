@@ -45,17 +45,17 @@ slam_toolbox:
     minimum_travel_heading: 0.05
     scan_buffer_size: 15
     scan_buffer_maximum_scan_distance: 15.0
-    link_match_minimum_response_fine: 0.1  
+    link_match_minimum_response_fine: 0.60  
     link_scan_maximum_distance: 3.0
     loop_search_maximum_distance: 6.0
     do_loop_closing: true 
     loop_match_minimum_chain_size: 10           
     loop_match_maximum_variance_coarse: 3.0  
-    loop_match_minimum_response_coarse: 0.25    
-    loop_match_minimum_response_fine: 0.35
+    loop_match_minimum_response_coarse: 0.45    
+    loop_match_minimum_response_fine: 0.55
 
     # Correlation Parameters - Correlation Parameters
-    correlation_search_space_dimension: 0.2
+    correlation_search_space_dimension: 0.5
     correlation_search_space_resolution: 0.01
     correlation_search_space_smear_deviation: 0.1 
 
