@@ -264,13 +264,13 @@ namespace vesc_driver
       std_imu_msg.orientation_covariance[4] = 0.0001;
       std_imu_msg.orientation_covariance[8] = 0.0001;
 
-      std_imu_msg.angular_velocity_covariance[0] = 0.001;
-      std_imu_msg.angular_velocity_covariance[4] = 0.001;
-      std_imu_msg.angular_velocity_covariance[8] = 0.001;
+      std_imu_msg.angular_velocity_covariance[0] = 0.00002;
+      std_imu_msg.angular_velocity_covariance[4] = 0.00002;
+      std_imu_msg.angular_velocity_covariance[8] = 0.00002;
 
-      std_imu_msg.linear_acceleration_covariance[0] = 0.001;
-      std_imu_msg.linear_acceleration_covariance[4] = 0.001;
-      std_imu_msg.linear_acceleration_covariance[8] = 0.001;
+      std_imu_msg.linear_acceleration_covariance[0] = 0.0004;
+      std_imu_msg.linear_acceleration_covariance[4] = 0.0004;
+      std_imu_msg.linear_acceleration_covariance[8] = 0.0004;
 
       imu_pub_->publish(imu_msg);
       imu_std_pub_->publish(std_imu_msg);
@@ -478,8 +478,8 @@ namespace vesc_driver
     if (lower && value < lower)
     {
       RCLCPP_INFO_THROTTLE(
-          logger, clock, 10, "%s command value (%f) below minimum limit (%f), clipping.",
-          name.c_str(), value, *lower);
+        logger, clock, 10, "%s command value (%f) below minimum limit (%f), clipping.",
+        name.c_str(), value, *lower);
       return *lower;
     }
     if (upper && value > upper)

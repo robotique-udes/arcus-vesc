@@ -17,26 +17,41 @@ class TfPublisher(Node):
         super().__init__('tf_publisher')
 
         # Parameters
-        self.declare_parameter('namespace', '')
-        self.declare_parameter('odom_topic', '')
-        self.declare_parameter('drive_topic', '')
-        self.declare_parameter('vesc_imu_topic', '/sensors/imu')
-        self.declare_parameter('imu_topic', '/imu')
+        self.declare_parameter('namespace', 'ego_racecar')
+        self.declare_parameter('scan_topic', '/scan')
+        self.declare_parameter('odom_topic', '/odom')
+        self.declare_parameter('drive_topic', '/drive')
+        self.declare_parameter('ekf_odom_topic', '/odometry/filtered')
+        self.declare_parameter('slam_map_topic', '/slam_map')
+        self.declare_parameter(
+            'map_path',
+            '/home/arcus/arcus/slam_map_saver/slam_maps/slam_map_20260325_015852'
+        )
+        self.declare_parameter(
+            'slam_maps_dir',
+            '/home/arcus/arcus/slam_map_saver/slam_maps'
+        )
+        self.declare_parameter('map_img_ext', '.pgm')
+        self.declare_parameter('sx', 0.0)
+        self.declare_parameter('sy', 0.0)
+        self.declare_parameter('stheta', 0.0)
+        self.declare_parameter('kb_teleop', True)
+        self.declare_parameter('localize', False)
+        self.declare_parameter('run_slam', True)
+        self.declare_parameter('run_ekf', True)
+        self.declare_parameter('pure_pursuit', False)
+        self.declare_parameter('disparity', True)
+        
+
 
         self.namespace = self.get_parameter('namespace').value
         odom_topic = self.get_parameter('odom_topic').value
         drive_topic = self.get_parameter('drive_topic').value
-        vesc_imu_topic = self.get_parameter('vesc_imu_topic').value
-        imu_topic = self.get_parameter('imu_topic').value
-
         # State
         self.ego_steer = 0.0
 
         # TF broadcaster
         self.br = TransformBroadcaster(self)
-
-        # Publishers
-        self.imu_pub = self.create_publisher(Imu, imu_topic, 10)
 
         # Subscribers
         self.create_subscription(
@@ -53,38 +68,11 @@ class TfPublisher(Node):
             10
         )
 
-        self.create_subscription(
-            VescImuStamped,
-            vesc_imu_topic,
-            self.vesc_imu_callback,
-            10
-        )
-
-        self.get_logger().info(
-            f"Bridging VESC IMU '{vesc_imu_topic}' → '{imu_topic}'"
-        )
-
     def drive_callback(self, msg):
         self.ego_steer = msg.drive.steering_angle
 
     def odom_callback(self, msg):
         self.publish_wheel_tf(msg.header.stamp)
-
-    def vesc_imu_callback(self, msg: VescImuStamped):
-        imu = Imu()
-
-        imu.header = msg.header
-
-        # Angular velocity
-        imu.angular_velocity = msg.imu.angular_velocity
-
-        # Linear acceleration
-        imu.linear_acceleration = msg.imu.linear_acceleration
-
-        # Do NOT provide orientation (tell EKF explicitly)
-        imu.orientation_covariance[0] = -1.0
-
-        self.imu_pub.publish(imu)
 
     def publish_wheel_tf(self, stamp):
         ts = TransformStamped()

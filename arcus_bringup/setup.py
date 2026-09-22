@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'tf_publisher'
+package_name = 'arcus_bringup'
 
 setup(
     name=package_name,
@@ -26,7 +26,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'tf_publisher = tf_publisher.tf_publisher:main'
+            'arcus_bringup = arcus_bringup.tf_publisher:main'
         ],
     },
 )

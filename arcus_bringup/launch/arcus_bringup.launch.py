@@ -27,7 +27,7 @@ def get_latest_map_yaml(map_dir: str):
 def generate_launch_description():
     ld = LaunchDescription()
     config = os.path.join(
-        get_package_share_directory('tf_publisher'),
+        get_package_share_directory('arcus_bringup'),
         'config',
         'arcus.yaml'
     )
@@ -39,6 +39,8 @@ def generate_launch_description():
     run_ekf = config_dict['tf_publisher']['ros__parameters']['run_ekf']
     scan_topic = config_dict['tf_publisher']['ros__parameters']['scan_topic']
     slam_map_topic = config_dict['tf_publisher']['ros__parameters']['slam_map_topic']
+    pure_pursuit = config_dict['tf_publisher']['ros__parameters']['pure_pursuit']
+    disparity = config_dict['tf_publisher']['ros__parameters']['disparity']
 
     if run_ekf:
         odom_topic = config_dict['tf_publisher']['ros__parameters']['ekf_odom_topic']
@@ -49,6 +51,8 @@ def generate_launch_description():
         maps_dir = config_dict['tf_publisher']['ros__parameters']['slam_maps_dir']
         latest_map_yaml = get_latest_map_yaml(maps_dir)
         map_path = latest_map_yaml if latest_map_yaml is not None else maps_dir + ".yaml"
+        if latest_map_yaml is None:
+            print("Didn't find map")
         print(f"[INFO] Loading map from {latest_map_yaml}")
 
     lidar_launch = IncludeLaunchDescription(
@@ -91,10 +95,36 @@ def generate_launch_description():
         )
     )
 
+    master_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/arcus_master/launch/master_node.launch.py')
+    )
+
+    disparity_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/gap_follow/launch/gap_follow.launch.py')
+    )
+
+    pure_pursuit_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/pure_pursuit/launch/pure_pursuit.launch.py')
+    )
+
+    safety_node_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/safety_node/launch/safety_node.launch.py')
+    )
+
+    track_zone_manager_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/track_zone_manager/launch/track_zone_manager.launch.py')
+    )
+
+    costmap_maker_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/costmap_maker/launch/costmap_maker.launch.py')
+    )
+
+
+
     # === Nodes ===
     bridge_node = Node(
-        package='tf_publisher',
-        executable='tf_publisher',
+        package='arcus_bringup',
+        executable='arcus_bringup',
         name='tf_publisher',
         parameters=[config]
     )
@@ -106,8 +136,7 @@ def generate_launch_description():
         parameters=[{'yaml_filename': map_path},
                     {'topic': 'map'},
                     {'frame_id': 'map'},
-                    {'output': 'screen'},
-                    {'use_sim_time': True}]
+                    {'output': 'screen'},]
     )
     if localize and not run_slam:
         nav_lifecycle_node = Node(
@@ -117,7 +146,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': True},
                         {'autostart': True},
-                        {'node_names': ['map_server', 'amcl']}]
+                        {'node_names': ['map_server']}]
         )
     else:
         nav_lifecycle_node = Node(
@@ -133,7 +162,7 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='ego_robot_state_publisher',
-        parameters=[{'robot_description': Command(['xacro ', os.path.join(get_package_share_directory('tf_publisher'), 'launch', 'ego_racecar.xacro')])}],
+        parameters=[{'robot_description': Command(['xacro ', os.path.join(get_package_share_directory('arcus_bringup'), 'launch', 'ego_racecar.xacro')])}],
         remappings=[('/robot_description', 'ego_robot_description')]
     )
     ekf_node = Node(
@@ -142,16 +171,19 @@ def generate_launch_description():
         name='ekf_filter_node',
         output='screen',
         parameters=[os.path.join(
-            get_package_share_directory('tf_publisher'),
+            get_package_share_directory('arcus_bringup'),
             'config',
             'ekf.yaml'
         )]
     )
     pf_node = Node(
         package='particle_filter',
-        executable='particle_filter',
+        executable='particle_filter_node',
         name='particle_filter',
-        parameters=['/home/nvidia/particle_filter/config/localize.yaml']
+        parameters=['/home/arcus/particle_filter/config/localize.yaml'],
+        remappings=[
+            ('/odom', odom_topic)
+        ]
     )
 
     slam_toolbox_node = Node(
@@ -160,7 +192,7 @@ def generate_launch_description():
         name='slam_toolbox',
         output='screen',
         parameters=[os.path.join(
-            get_package_share_directory('tf_publisher'),
+            get_package_share_directory('arcus_bringup'),
             'config',
             'mapper_params_online_async.yaml')
         ],
@@ -179,6 +211,14 @@ def generate_launch_description():
     ld.add_action(vesc_driver_launch)
     ld.add_action(vesc_odom_launch)
     ld.add_action(ackermann_vesc_launch)
+    ld.add_action(master_node_launch)
+    ld.add_action(safety_node_launch)
+    ld.add_action(track_zone_manager_launch)
+    ld.add_action(costmap_maker_launch)
+    if pure_pursuit:
+        ld.add_action(pure_pursuit_node_launch)
+    if disparity:
+        ld.add_action(disparity_node_launch)
     if localize and not run_slam:
         ld.add_action(ekf_node)
         ld.add_action(pf_node)
