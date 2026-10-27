@@ -1,0 +1,54 @@
+foxglove_bridge:
+  ros__parameters:
+    port: 8765
+    address: "0.0.0.0"
+
+    topic_whitelist:
+      - ".*"
+    service_whitelist:
+      - ".*"
+    param_whitelist:
+      - ".*"
+    client_topic_whitelist:
+      - ".*"
+
+    capabilities:
+      - "clientPublish"
+      - "parameters"
+      - "parametersSubscribe"
+      - "services"
+      - "connectionGraph"
+      - "assets"
+    asset_uri_allowlist:
+      - "^package://(?:[-\\w%]+/)*[-\\w%]+\\.(?:dae|fbx|glb|gltf|jpeg|jpg|mtl|obj|png|stl|tif|tiff|urdf|webp|xacro)$"
+
+    num_threads: 0
+    min_qos_depth: 1
+    max_qos_depth: 10
+    best_effort_qos_topic_whitelist:
+      - "(?!)"
+    include_hidden: false
+    disable_load_message: true
+    ignore_unresponsive_param_nodes: true
+    send_buffer_limit: 10000000
+
+    tls: false
+    certfile: ""
+    keyfile: ""
+    use_sim_time: false
+
+    sysinfo: true
+    sysinfo_topic: "/foxglove_bridge/sysinfo"
+    sysinfo_refresh_interval: 500
+    message_backlog_size: 1024
+
+    remote_access: false
+    device_token: ""
+    video_encoder: "auto"
+    max_data_track_message_size: 102400
+    video_transcode_topic_denylist:
+      - ".*/compressedDepth"
+    point_cloud_compression_topic_denylist: []
+    point_cloud_compression_quantization_bits: 12
+    point_cloud_compression_method: "kd-tree"
+    
