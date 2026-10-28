@@ -4,7 +4,17 @@ foxglove_bridge:
     address: "0.0.0.0"
 
     topic_whitelist:
-      - ".*"
+      - "/tf"
+      - "/tf_static"
+      - "/odom"
+      - "/odometry/filtered"
+      - "/map"
+      - "/slam_map"
+      - "/scan"
+      - "/ego_robot_description"
+      - "/master_heartbeat"
+      - "/master_error_code"
+
     service_whitelist:
       - ".*"
     param_whitelist:
@@ -48,7 +58,7 @@ foxglove_bridge:
     max_data_track_message_size: 102400
     video_transcode_topic_denylist:
       - ".*/compressedDepth"
-    point_cloud_compression_topic_denylist: []
+    point_cloud_compression_topic_denylist: ['(?!)']
     point_cloud_compression_quantization_bits: 12
     point_cloud_compression_method: "kd-tree"
     

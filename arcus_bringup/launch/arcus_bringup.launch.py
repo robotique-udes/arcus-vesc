@@ -125,12 +125,7 @@ def generate_launch_description():
         package='foxglove_bridge',
         executable='foxglove_bridge',
         name='foxglove_bridge',
-        parameters=[
-            os.path.join(
-            get_package_share_directory('arcus_bringup'),
-            'config',
-            'foxglove-bridge.yaml'
-    )]
+        parameters=['/home/arcus/arcus-vesc/arcus_bringup/config/foxglove-bridge.yaml']
     )
 
     bridge_node = Node(

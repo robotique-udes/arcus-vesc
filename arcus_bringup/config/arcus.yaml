@@ -46,7 +46,7 @@ tf_publisher:
     #Use particle filter
     localize: True
     #Run slam + EKF
-    run_slam: True #Overwrites localization if true
+    run_slam: False  #Overwrites localization if true
 
     run_ekf: True
 
