@@ -48,7 +48,7 @@ foxglove_bridge:
     max_data_track_message_size: 102400
     video_transcode_topic_denylist:
       - ".*/compressedDepth"
-    point_cloud_compression_topic_denylist: []
+    point_cloud_compression_topic_denylist: ["(?!)"]
     point_cloud_compression_quantization_bits: 12
     point_cloud_compression_method: "kd-tree"
     
