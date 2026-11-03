@@ -124,8 +124,14 @@ def generate_launch_description():
     )
 
 
-
     # === Nodes ===
+    foxglove_bridge_node = Node(
+        package='foxglove_bridge',
+        executable='foxglove_bridge',
+        name='foxglove_bridge',
+        parameters=['/home/arcus/arcus-vesc/arcus_bringup/config/foxglove-bridge.yaml']
+    )
+
     bridge_node = Node(
         package='arcus_bringup',
         executable='arcus_bringup',
@@ -207,6 +213,7 @@ def generate_launch_description():
         ]
     )
     # === Finalize ===
+    ld.add_action(foxglove_bridge_node)
     ld.add_action(bridge_node)
     ld.add_action(nav_lifecycle_node)
     ld.add_action(map_server_node)
