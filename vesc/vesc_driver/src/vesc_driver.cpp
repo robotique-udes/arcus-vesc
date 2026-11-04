@@ -260,13 +260,13 @@ namespace vesc_driver
       std_imu_msg.orientation.y = imuData->q_y();
       std_imu_msg.orientation.z = imuData->q_z();
 
-      std_imu_msg.orientation_covariance[0] = 0.0001;
-      std_imu_msg.orientation_covariance[4] = 0.0001;
-      std_imu_msg.orientation_covariance[8] = 0.0001;
+      std_imu_msg.orientation_covariance[0] = 0.0000001;
+      std_imu_msg.orientation_covariance[4] = 0.0000001;
+      std_imu_msg.orientation_covariance[8] = 0.0000001;
 
-      std_imu_msg.angular_velocity_covariance[0] = 0.00002;
-      std_imu_msg.angular_velocity_covariance[4] = 0.00002;
-      std_imu_msg.angular_velocity_covariance[8] = 0.00002;
+      std_imu_msg.angular_velocity_covariance[0] = 0.00000002;
+      std_imu_msg.angular_velocity_covariance[4] = 0.00000002;
+      std_imu_msg.angular_velocity_covariance[8] = 0.00000002;
 
       std_imu_msg.linear_acceleration_covariance[0] = 0.0004;
       std_imu_msg.linear_acceleration_covariance[4] = 0.0004;

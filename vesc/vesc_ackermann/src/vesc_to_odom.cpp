@@ -162,8 +162,8 @@ namespace vesc_ackermann
 
     // Position uncertainty
     /** @todo Think about position uncertainty, perhaps get from parameters? */
-    odom.pose.covariance[0] = 0.2;  ///< x
-    odom.pose.covariance[7] = 0.2;  ///< y
+    odom.pose.covariance[0] = 0.25;  ///< x
+    odom.pose.covariance[7] = 0.5;  ///< y
     odom.pose.covariance[35] = 0.4; ///< yaw
 
     // Velocity ("in the coordinate frame given by the child_frame_id")
@@ -173,8 +173,8 @@ namespace vesc_ackermann
 
     // Velocity uncertainty
     odom.twist.covariance[0] = 0.02;  ///< x
-    odom.twist.covariance[7] = 0.01;  ///< y
-    odom.twist.covariance[35] = 0.09; ///< yaw
+    odom.twist.covariance[7] = 0.05;  ///< y
+    odom.twist.covariance[35] = 0.000009; ///< yaw
 
     if (publish_tf_)
     {

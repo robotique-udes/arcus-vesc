@@ -14,6 +14,9 @@ foxglove_bridge:
       - "/ego_robot_description"
       - "/master_heartbeat"
       - "/master_error_code"
+      - "/pf/viz/particles"
+      - "/pf/viz/fake_scan"
+      - "/pure_pursuit/risk_path"
 
     service_whitelist:
       - ".*"
@@ -34,7 +37,7 @@ foxglove_bridge:
 
     num_threads: 0
     min_qos_depth: 1
-    max_qos_depth: 10
+    max_qos_depth: 30
     best_effort_qos_topic_whitelist:
       - "(?!)"
     include_hidden: false
