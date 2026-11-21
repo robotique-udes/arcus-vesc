@@ -125,7 +125,11 @@ def generate_launch_description():
         package='foxglove_bridge',
         executable='foxglove_bridge',
         name='foxglove_bridge',
-        parameters=['/home/arcus/arcus-vesc/arcus_bringup/config/foxglove-bridge.yaml']
+        parameters=[os.path.join(
+            get_package_share_directory('arcus_bringup'),
+            'config',
+            'foxglove-bridge.yaml'
+        )]
     )
 
     bridge_node = Node(
@@ -186,7 +190,11 @@ def generate_launch_description():
         package='particle_filter',
         executable='particle_filter_node',
         name='particle_filter',
-        parameters=['/home/arcus/particle_filter/config/localize.yaml'],
+        parameters=[os.path.join(
+            get_package_share_directory('particle_filter'),
+            'config',
+            'localize.yaml'
+        )],
         remappings=[
             ('/odom', odom_topic)
         ]
