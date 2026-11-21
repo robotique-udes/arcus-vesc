@@ -123,6 +123,9 @@ def generate_launch_description():
         PythonLaunchDescriptionSource('/home/arcus/arcus/param_saver_node/launch/param_saver_node.launch.py')
     )
 
+    raceline_manager_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource('/home/arcus/arcus/raceline_manager/launch/raceline_manager.launch.py')
+    )
 
     # === Nodes ===
     foxglove_bridge_node = Node(
@@ -227,6 +230,7 @@ def generate_launch_description():
     ld.add_action(track_zone_manager_launch)
     ld.add_action(costmap_maker_launch)
     ld.add_action(param_saver_launch)
+    ld.add_action(raceline_manager_launch)
     if pure_pursuit:
         ld.add_action(pure_pursuit_node_launch)
     if disparity:
